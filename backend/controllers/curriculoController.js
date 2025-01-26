@@ -5,6 +5,7 @@ const sendNotification = require('../utils/curriculos/sendNotification');
 const vaga = models.Vaga;
 const curriculoVaga = models.CurriculosVagas;
 const candidatoModel = models.Curriculo;
+const avaliacao = models.Avaliacao;
 
 const createItensModels = async (req, valueBody, model, value, candidato) => {
   const getModel = models[`${model}`];
@@ -114,6 +115,109 @@ const curriculo = {
     }
   },
   
+
+  listarVagasAvaliar: async (req, res) => {
+    const curriculovaga = models.CurriculosVagas;
+    const { Op } = require('sequelize');
+
+    try {
+      const vagas = await curriculovaga.findAll({
+        where: {
+          CurriculoId: req.params.idCurriculo,
+          status: {
+            [Op.in]: ['Aceito', 'Rejeitado'],
+          },
+        },
+        include: [
+          {
+            model: models.Vaga,
+            required: true,
+            include: [
+              {
+                model: models.Empresa,
+                required: true,
+                attributes: ['nome', 'logo'], // Apenas campos necessários
+              },
+            ],
+          },
+        ],
+      });
+
+      if (vagas.length === 0) {
+        return res.status(404).json({
+          error: true,
+          message: 'Nenhuma vaga encontrada para o currículo informado.',
+        });
+      }
+
+      const vagasArray = vagas.map((vaga) => ({
+        ...vaga.toJSON(),
+      }));
+
+      res.json(vagasArray);
+    } catch (erro) {
+      console.error('Erro na função listarVagasAvaliar:', erro);
+      return res.status(500).json({
+        error: true,
+        message: 'Erro interno no servidor. Verifique os logs.',
+      });
+    }
+  },
+
+avaliar: async (req, res) => {
+  const { avaliador_id, avaliador_tipo, avaliado_id, nota, pros, contras } = req.body;
+
+  if (![1, 2, 3, 4, 5].includes(nota)) {
+    return res.status(400).json({ message: 'Nota deve ser entre 1 e 5.' });
+  }
+  if (!pros || !contras) {
+    return res.status(400).json({ message: 'É necessário informar os prós e contras.' });
+  }
+
+  const avaliacoes = models.Avaliacao;
+
+  try {
+    let avaliacao = await avaliacoes.findOne({
+      where: {
+        avaliador_id,
+        avaliador_tipo,
+        avaliado_id
+      }
+    });
+
+    if (avaliacao) {
+      avaliacao.nota = nota;
+      avaliacao.pros = pros;
+      avaliacao.contras = contras;
+      await avaliacao.save();
+
+      return res.json({
+        error: false,
+        message: 'Avaliação atualizada com sucesso.',
+      });
+    } else {
+      await avaliacoes.create({
+        avaliador_id,
+        avaliador_tipo,
+        avaliado_id,
+        nota,
+        pros,
+        contras
+      });
+
+      return res.json({
+        error: false,
+        message: 'Avaliação registrada com sucesso.',
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      error: true,
+      message: 'Erro ao tentar adicionar ou atualizar a avaliação.',
+    });
+  }
+},
 
 
   listarCurriculo: async (req, res) => {

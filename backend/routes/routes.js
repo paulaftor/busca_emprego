@@ -25,12 +25,21 @@ router.post(
   authCandidato,
   curriculoController.createCurriculo
 );
+
+router.post('/avaliar/:idCurriculo/:idVaga', authCandidato, curriculoController.avaliar);
+
 router.post('/candidatar', authCandidato, curriculoController.candidatar);
 //pega listar todas as vagas que o currículo se candidatou
 router.get(
   '/candidatura/vagas/:idCurriculo',
   authCandidato,
   candidatoControlle.listarVagasTESTE
+);
+
+router.get(
+    '/candidatura/vagas/avaliar/:idCurriculo',
+    authCandidato,
+    curriculoController.listarVagasAvaliar
 );
 
 //rota de funcionalidades candidato:
@@ -66,6 +75,10 @@ router.get(
 );
 //rota de cadastro de vaga
 router.post('/cadastro/vaga', authEmpresa, vagaController.cadastroVaga);
+
+// avaliar
+router.post('/avaliar/:idEmpresa/:idCurriculo', authEmpresa, empresaController.avaliar);
+
 //rota para alterar uma vaga
 router.put('/alterar/vaga/:idVaga', authEmpresa, vagaController.alterarVaga);
 //rota para listar as vagas da empresa

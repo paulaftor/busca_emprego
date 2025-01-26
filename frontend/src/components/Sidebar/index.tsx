@@ -55,6 +55,10 @@ const candidatoScreens = (idCandidato: string | undefined) => [
     name: 'Minhas candidaturas',
     navigateTo: `/candidato/${idCandidato}/candidaturas`,
   },
+  {
+      name: 'Avaliações',
+      navigateTo: `/candidato/${idCandidato}/avaliacoes`,
+  },
 ];
 
 const empresaIcons = (screen: string) => {
@@ -78,6 +82,8 @@ const candidatoIcons = (screen: string) => {
       return <PermContactCalendar />;
     case 'Minhas candidaturas':
         return <Dashboard />;
+    case 'Avaliações':
+            return <Dashboard />;
     default:
       break;
   }

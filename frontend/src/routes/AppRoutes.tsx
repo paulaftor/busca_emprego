@@ -13,6 +13,7 @@ import { AlterarVaga } from '../screens/Vagas/AlteraçãoVaga';
 import { ExibirVaga } from '../screens/Vagas/ExibirVaga';
 import { ListagemVagasEmpresa } from '../screens/Vagas/ListagemVagasEmpresa';
 import MinhasCandidaturas from '../screens/Curriculos/MinhasCandidaturas';
+import Avaliacoes from '../screens/Curriculos/Avaliacoes';
 
 export function AppRoutes() {
   const { loginStore } = useStore();
@@ -25,6 +26,7 @@ export function AppRoutes() {
         <Route path="candidato/vagas" element={<ListagemVagasCandidato />} />
         <Route path="candidato/vagas/:id" element={<ExibirVaga />} />
         <Route path="candidato/:idCurriculo/candidaturas" element={<MinhasCandidaturas />} />
+        <Route path="candidato/:idCurriculo/avaliacoes" element={<Avaliacoes />} />
         <Route path="empresa/vaga/:idVaga/curriculos" element={<ListagemCurriculos />} />
         <Route path="empresa/curriculo/:idCurriculo/:idVaga" element={<ListagemCurriculoCompleto />} />
         <Route path="empresa/vagas/:id" element={<ListagemVagasEmpresa />} />

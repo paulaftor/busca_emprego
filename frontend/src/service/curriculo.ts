@@ -61,3 +61,69 @@ export const getListCandidacy = async(idCurriculo: string, token: string) => {
   return response.data;
 }
 
+export const getListAvaliacoes = async (idCurriculo: string, token: string) => {
+    const response = await api.get(
+        `/usuario/candidatura/vagas/avaliar/${idCurriculo}`,
+        {
+            headers: {
+                'authorization-token': token,
+            },
+        }
+        );
+    return response.data;
+};
+
+export const sendAvaliacao = async (
+    idCurriculo: string,
+    idVaga: string,
+    avaliacao: number,
+      token: string
+    ) => {
+    const response = await api.post(
+        `/usuario/candidatura/vagas/avaliar/${idCurriculo}`,
+        {
+            idVaga,
+            avaliacao,
+        },
+        {
+        headers: {
+            'authorization-token': token,
+        },
+    }
+    );
+    return response.data;
+};
+
+
+export const saveAvaliacao = async (
+    idCurriculo: string,
+    idVaga: string,
+    avaliadorId: number,
+    avaliadorTipo: string,
+    avaliadoId: number,
+    nota: number,
+    pros: string,
+    contras: string,
+    token: string
+    ) => {
+    const body = {
+        avaliador_id: avaliadorId,
+        avaliador_tipo: avaliadorTipo,
+        avaliado_id: avaliadoId,
+        nota: nota,
+        pros: pros,
+        contras: contras,
+    };
+
+    const response = await api.post(
+        `/usuario/avaliar/${idCurriculo}/${idVaga}`,
+    body,
+    {
+        headers: {
+            'authorization-token': token,
+        },
+    }
+    );
+
+    return response.data;
+};

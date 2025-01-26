@@ -108,7 +108,106 @@ const candidatoController = {
         });
       });
   },
-  
+
+  listarVagasAvaliar: async (req, res) => {
+    const curriculovaga = models.CurriculosVagas;
+
+    try {
+      await curriculovaga
+        .findAll({
+          where: {
+            CurriculoId: req.params.idCurriculo,
+            status: {
+              [Op.in]: ['Aceito', 'Rejeitado']
+            }
+          },
+          include: [
+            {
+              model: models.Vaga,
+              required: true,
+              include: [
+                {
+                  model: models.Empresa,
+                  required: true,
+                }
+              ]
+            }
+          ]
+        })
+        .then((vagas) => {
+          const vagasArray = vagas.map((vaga) => {
+            return {
+              ...vaga.toJSON(),
+            };
+          });
+          res.json(vagasArray);
+        })
+        .catch((erro) => {
+          return res.status(400).json({
+            error: true,
+            message: erro,
+          });
+        });
+    } catch (erro) {
+      return res.status(500).json({
+        error: true,
+        message: 'Erro interno no servidor.',
+      });
+    }
+  },
+
+  adicionarAvaliacao: async (req, res) => {
+      const { avaliador_id, avaliador_tipo, avaliado_id, nota, pros, contras } = req.body;
+
+      if (![1, 2, 3, 4, 5].includes(nota)) {
+        return res.status(400).json({ message: 'Nota deve ser entre 1 e 5.' });
+      }
+      if (!pros || !contras) {
+        return res.status(400).json({ message: 'É necessário informar os prós e contras.' });
+      }
+
+      try {
+        let avaliacao = await Avaliacao.findOne({
+          where: {
+            avaliador_id,
+            avaliador_tipo,
+            avaliado_id
+          }
+        });
+
+        if (avaliacao) {
+          avaliacao.nota = nota;
+          avaliacao.pros = pros;
+          avaliacao.contras = contras;
+          await avaliacao.save();
+
+          return res.json({
+            error: false,
+            message: 'Avaliação atualizada com sucesso.',
+          });
+        } else {
+          await Avaliacao.create({
+            avaliador_id,
+            avaliador_tipo,
+            avaliado_id,
+            nota,
+            pros,
+            contras
+          });
+
+          return res.json({
+            error: false,
+            message: 'Avaliação registrada com sucesso.',
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+          error: true,
+          message: 'Erro ao tentar adicionar ou atualizar a avaliação.',
+        });
+      }
+    },
 
 
   listarVagasSearch: async (req, res) => {

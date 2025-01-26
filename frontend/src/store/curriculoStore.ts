@@ -1,6 +1,6 @@
 import { makeAutoObservable, toJS } from 'mobx';
 import { ItensList } from '../types/curriculo';
-import { createCurriculo, getListCandidacy } from '../service';
+import { createCurriculo, getListCandidacy, getListAvaliacoes, sendAvaliacao } from '../service';
 import { SnackbarStore } from './snackbar';
 export interface CurriculoStoreType {
   nomeEmpresa: string;
@@ -40,6 +40,7 @@ export interface CurriculoStoreType {
   ) => void;
 
   handleListCandidacy: (idCurriculo: string, token: string) => void
+  handleListAvaliacoes: (idCurriculo: string, token: string) => void
 }
 
 export class CurriculoStore implements CurriculoStoreType {
@@ -51,6 +52,11 @@ export class CurriculoStore implements CurriculoStoreType {
   setNomeEmpresa(nomeEmpresa: string) {
     this.nomeEmpresa = nomeEmpresa;
   }
+
+    idCurriculo: string = '';
+    setIdCurriculo(id: string) {
+        this.idCurriculo = id;
+    }
 
   inicio: string = '';
   setInicio(inicio: string) {
@@ -80,6 +86,11 @@ export class CurriculoStore implements CurriculoStoreType {
   listCandidacy: Array<any> = [];
   setListCandidacy( listCandidacy: Array<any>) {
     this.listCandidacy = listCandidacy;
+  }
+
+  listAvaliacoes: Array<any> = [];
+  setListAvaliacoes(listAvaliacoes: Array<any>) {
+    this.listAvaliacoes = listAvaliacoes;
   }
 
   clearStatesCurriculo = () => {
@@ -163,4 +174,27 @@ export class CurriculoStore implements CurriculoStoreType {
     this.setListCandidacy(response)
     return response
   }
+
+  async handleListAvaliacoes(idCurriculo: string, token: string) {
+      const response = await getListAvaliacoes(idCurriculo, token);
+      console.log('Avaliações:', response);
+      console.log('Avaliações:', response);
+      this.setListAvaliacoes(response);
+      return response;
+  }
+
+async handleSendAvaliacao(idCurriculo: string, idVaga: string, avaliacao: number, token: string) {
+  try {
+    const response = await sendAvaliacao(idCurriculo, idVaga, avaliacao, token);
+    if (response.ok) {
+          console.log('Avaliação enviada com sucesso!');
+    } else {
+          console.log('Erro ao enviar avaliação:', response.message);
+    }
+  } catch (error) {
+      console.error('Erro na função de enviar avaliação:', error);
+  }
+}
+
+
 }
