@@ -25,7 +25,7 @@ const MinhasCandidaturas = () => {
     <Box bgcolor="rgb(245 245 244)">
       <Header titleHeader="Estas são as suas candidaturas..." />
       <Box minHeight="84.2vh" position="relative" bottom="30px">
-          <Lista listagem={ list}/>
+          <Lista listagem={ list} idCurriculo={idCurriculo ?? ''} />
         
       </Box>
 

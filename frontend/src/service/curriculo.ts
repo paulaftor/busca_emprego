@@ -73,27 +73,6 @@ export const getListAvaliacoes = async (idCurriculo: string, token: string) => {
     return response.data;
 };
 
-export const sendAvaliacao = async (
-    idCurriculo: string,
-    idVaga: string,
-    avaliacao: number,
-      token: string
-    ) => {
-    const response = await api.post(
-        `/usuario/candidatura/vagas/avaliar/${idCurriculo}`,
-        {
-            idVaga,
-            avaliacao,
-        },
-        {
-        headers: {
-            'authorization-token': token,
-        },
-    }
-    );
-    return response.data;
-};
-
 
 export const saveAvaliacao = async (
     idCurriculo: string,
@@ -117,6 +96,36 @@ export const saveAvaliacao = async (
 
     const response = await api.post(
         `/usuario/avaliar/${idCurriculo}/${idVaga}`,
+    body,
+    {
+        headers: {
+            'authorization-token': token,
+        },
+    }
+    );
+
+    return response.data;
+};
+
+
+export const saveDenuncia = async (
+    idCurriculo: string,
+    idVaga: string,
+    denuncianteId: number,
+    denuncianteTipo: string,
+    denunciadoId: number,
+    tipoDenuncia: number,
+    token: string
+    ) => {
+        const body = {
+        denunciante_id: denuncianteId,
+        denunciante_tipo: denuncianteTipo,
+        denunciado_id: denunciadoId,
+        tipo_denuncia: tipoDenuncia,
+    };
+
+    const response = await api.post(
+        `/usuario/denunciar/${idCurriculo}/${idVaga}`,
     body,
     {
         headers: {

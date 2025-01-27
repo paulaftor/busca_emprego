@@ -100,6 +100,57 @@ const empresaController = {
     }
   },
 
+
+denunciar: async (req, res) => {
+  const { denunciante_id, denunciante_tipo, denunciado_id, tipo_denuncia } = req.body;
+
+  if (![1, 2, 3, 4, 5].includes(tipo_denuncia)) {
+    return res.status(400).json({ message: 'Tipo de denúncia deve ser entre 1 e 5.' });
+  }
+
+  const denuncias = models.Denuncia;
+
+  try {
+    let denuncia = await avaliacoes.findOne({
+      where: {
+        denunciante_id,
+        denunciante_tipo,
+        denunciado_id
+      }
+    });
+
+    if (denuncia) {
+      denuncia.tipo_denuncia = tipo_denuncia;
+      await denuncia.save();
+
+      return res.json({
+        error: false,
+        message: 'Denuncia atualizada com sucesso.',
+      });
+    } else {
+      await denuncias.create({
+        denunciante_id,
+        denunciante_tipo,
+        denunciado_id,
+        tipo_denuncia
+      });
+
+      return res.json({
+        error: false,
+        message: 'Denúncia registrada com sucesso.',
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      error: true,
+      message: 'Erro ao tentar adicionar ou atualizar a denúncia.',
+    });
+  }
+},
+
 };
+
+
 
 module.exports = empresaController;

@@ -45,7 +45,7 @@ const empresaScreens = (idEMpresa: string | undefined) => [
 const candidatoScreens = (idCandidato: string | undefined) => [
   {
     name: 'Vagas',
-    navigateTo: '/candidato/vagas',
+    navigateTo: `/candidato/${idCandidato}/vagas`,
   },
   {
     name: 'Cadastrar currículo',

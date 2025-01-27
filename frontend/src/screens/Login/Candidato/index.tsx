@@ -12,17 +12,20 @@ export const LoginCandidato = observer(() => {
   const navigate = useNavigate();
   const { loginStore } = useStore();
 
-  const handleLogin = async () => {
-    loginStore.setLoading(true);
-    await delay(1000);
+ const handleLogin = async () => {
+   loginStore.setLoading(true);
+   await delay(1000);
 
-    const response = await loginStore.authCandidato();
-    if (response.ok) {
-      loginStore.getPersistedStore();
-      navigate('/candidato/vagas');
-    }
-    loginStore.setLoading(false);
-  };
+   const response = await loginStore.authCandidato();
+   if (response.ok) {
+     loginStore.getPersistedStore();
+     const idCurriculo = loginStore.user.id;
+     navigate(`/candidato/${idCurriculo}/vagas`);
+   }
+   loginStore.setLoading(false);
+ };
+
+
 
   return (
     <Box

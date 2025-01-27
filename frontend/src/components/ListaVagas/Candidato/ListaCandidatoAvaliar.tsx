@@ -65,7 +65,7 @@ export const ListaAvaliacoes = observer((props: ListaProps) => {
         idCurriculo,
         selectedVaga.id,
         Number(idCurriculo),
-        'Candidato', // Tipo do avaliador
+        'Candidato',
         Number(selectedVaga.id),
         nota,
         pros,
@@ -133,6 +133,20 @@ export const ListaAvaliacoes = observer((props: ListaProps) => {
                 className="bg-background1 text-white py-2.5 px-6 rounded text-sm flex items-center"
                 onClick={() => openModal(e)}
               >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
+                </svg>
                 <span className="ml-2">Avaliar</span>
               </button>
             </div>
@@ -189,7 +203,7 @@ export const ListaAvaliacoes = observer((props: ListaProps) => {
               </button>
               <button
                 onClick={saveEvaluation}
-                className="bg-blue-600 text-white py-2 px-4 rounded"
+                className="bg-background1 text-white py-2.5 px-6 rounded text-sm flex items-center"
               >
                 Salvar Avaliação
               </button>

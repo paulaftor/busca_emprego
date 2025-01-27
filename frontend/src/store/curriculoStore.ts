@@ -1,6 +1,6 @@
 import { makeAutoObservable, toJS } from 'mobx';
 import { ItensList } from '../types/curriculo';
-import { createCurriculo, getListCandidacy, getListAvaliacoes, sendAvaliacao } from '../service';
+import { createCurriculo, getListCandidacy, getListAvaliacoes } from '../service';
 import { SnackbarStore } from './snackbar';
 export interface CurriculoStoreType {
   nomeEmpresa: string;
@@ -178,23 +178,10 @@ export class CurriculoStore implements CurriculoStoreType {
   async handleListAvaliacoes(idCurriculo: string, token: string) {
       const response = await getListAvaliacoes(idCurriculo, token);
       console.log('Avaliações:', response);
-      console.log('Avaliações:', response);
       this.setListAvaliacoes(response);
       return response;
   }
 
-async handleSendAvaliacao(idCurriculo: string, idVaga: string, avaliacao: number, token: string) {
-  try {
-    const response = await sendAvaliacao(idCurriculo, idVaga, avaliacao, token);
-    if (response.ok) {
-          console.log('Avaliação enviada com sucesso!');
-    } else {
-          console.log('Erro ao enviar avaliação:', response.message);
-    }
-  } catch (error) {
-      console.error('Erro na função de enviar avaliação:', error);
-  }
-}
 
 
 }

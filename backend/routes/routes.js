@@ -27,6 +27,7 @@ router.post(
 );
 
 router.post('/avaliar/:idCurriculo/:idVaga', authCandidato, curriculoController.avaliar);
+router.post('/denunciar/:idCurriculo/:idVaga', authCandidato, curriculoController.denunciar);
 
 router.post('/candidatar', authCandidato, curriculoController.candidatar);
 //pega listar todas as vagas que o currículo se candidatou
@@ -78,6 +79,7 @@ router.post('/cadastro/vaga', authEmpresa, vagaController.cadastroVaga);
 
 // avaliar
 router.post('/avaliar/:idEmpresa/:idCurriculo', authEmpresa, empresaController.avaliar);
+router.post('/denunciar/:idEmpresa/:idCurriculo', authEmpresa, empresaController.denunciar);
 
 //rota para alterar uma vaga
 router.put('/alterar/vaga/:idVaga', authEmpresa, vagaController.alterarVaga);

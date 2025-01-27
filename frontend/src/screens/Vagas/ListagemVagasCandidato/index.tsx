@@ -4,9 +4,12 @@ import { useStore } from '../../../hooks/stores'
 import {listarVagasCandidato, listarVagasCandidatoSearch} from '../../../service/vagas'
 import { Box, Divider } from '@mui/material'
 import {observer} from "mobx-react-lite";
+import {useParams} from "react-router-dom";
 
 export const ListagemVagasCandidato = observer(() => {
-    const { loginStore, vagaStore } = useStore()
+    const { loginStore, vagaStore, curriculoStore } = useStore()
+    const { idCurriculo } = useParams();
+
     const { vagas, setVagas } = vagaStore
     const {
         empresa,
@@ -111,7 +114,7 @@ export const ListagemVagasCandidato = observer(() => {
                         </Box>
                     </form>
                 </Box>
-                <Lista listagem={vagas} />
+                <Lista listagem={vagas} idCurriculo={idCurriculo ?? ''}/>
             </Box>
         </Box>
     )

@@ -23,7 +23,7 @@ export function AppRoutes() {
       <Sidebar typeUser={loginStore.typeUser} navigate={navigate} />
       <Routes>
         <Route path="candidato/:id/curriculo" element={<CadastroCurriculo />} />
-        <Route path="candidato/vagas" element={<ListagemVagasCandidato />} />
+        <Route path="candidato/:idCurriculo/vagas" element={<ListagemVagasCandidato />} />
         <Route path="candidato/vagas/:id" element={<ExibirVaga />} />
         <Route path="candidato/:idCurriculo/candidaturas" element={<MinhasCandidaturas />} />
         <Route path="candidato/:idCurriculo/avaliacoes" element={<Avaliacoes />} />
@@ -31,7 +31,7 @@ export function AppRoutes() {
         <Route path="empresa/curriculo/:idCurriculo/:idVaga" element={<ListagemCurriculoCompleto />} />
         <Route path="empresa/vagas/:id" element={<ListagemVagasEmpresa />} />
         <Route path="empresa/cadastro/vaga" element={<CadastroVaga />} />
-        <Route path="empresa/alterar/vaga/:id" elecment={<AlterarVaga />} />
+        <Route path="empresa/alterar/vaga/:id" element={<AlterarVaga />} />
       </Routes>
     </>
   );
