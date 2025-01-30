@@ -22,7 +22,7 @@ const Avaliacoes = () => {
 
   return (
     <Box bgcolor="rgb(245 245 244)">
-      <Header titleHeader="Estas são as suas avaliações..." />
+      <Header titleHeader="Adicione uma avaliação" />
       <Box minHeight="84.2vh" position="relative" bottom="30px">
         <ListaAvaliacoes listagem={list} idCurriculo={idCurriculo || ''} />
       </Box>

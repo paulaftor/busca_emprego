@@ -11,9 +11,10 @@ type SuccessMessage =
   | 'Falha ao cadastrar a empresa'
   | 'Email copiado para a área de transferência'
   | 'Status atualizado com sucesso e notificação enviada'
-  | 'Denúncia enviada com sucesso!'
-  | 'Ocorreu um erro ao copiar o email';
-type ErrorMessage = 'Ops, algo deu errado :(' | 'Erro ao enviar denúncia. Tente novamente.' | 'Por favor, selecione uma opção de denúncia.';
+  | 'Ocorreu um erro ao copiar o email'
+  | 'Denúncia realizada com sucesso'
+  | 'Avaliação enviada com sucesso';
+type ErrorMessage = 'Ops, algo deu errado :(' | 'Preencha todos os campos' |'Erro ao enviar denúncia. Tente novamente.' | 'Erro ao enviar avaliação. Tente novamente.';
 
 
 export interface SnackbarStoreType {

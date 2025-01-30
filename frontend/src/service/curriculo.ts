@@ -114,14 +114,16 @@ export const saveDenuncia = async (
     denuncianteId: number,
     denuncianteTipo: string,
     denunciadoId: number,
-    tipoDenuncia: number,
+    titulo: string,
+    conteudo: string,
     token: string
     ) => {
         const body = {
-        denunciante_id: denuncianteId,
-        denunciante_tipo: denuncianteTipo,
-        denunciado_id: denunciadoId,
-        tipo_denuncia: tipoDenuncia,
+            denunciante_id: denuncianteId,
+            denunciante_tipo: denuncianteTipo,
+            denunciado_id: denunciadoId,
+            titulo: titulo,
+            conteudo: conteudo,
     };
 
     const response = await api.post(
@@ -130,6 +132,7 @@ export const saveDenuncia = async (
     {
         headers: {
             'authorization-token': token,
+            'Content-Type': 'application/json',
         },
     }
     );

@@ -12,6 +12,8 @@ import { BasicModal } from '../../../components/Modal';
 import FooterButtons from './components/FooterButtons';
 import { Header } from './components/Header';
 import { UpdateStatusModal } from './components/UpdateStatus';
+import { DenunciaModal } from './components/Denuncia';
+import { AvaliacaoModal } from './components/Avaliacao';
 
 export interface Idioma {
   nome: string;
@@ -50,13 +52,15 @@ export interface Curriculo {
 }
 
 type Params = {
-  idCurriculo: string, idVaga: string 
+  idCurriculo: string, idVaga: string
 }
 
 export function ListagemCurriculoCompleto() {
   const { snackbarStore, vagaStore, loginStore } = useStore();
   const { idCurriculo, idVaga } = useParams();
   const [openModal, setOpenModal] = useState(false)
+  const [openModalDenuncia, setOpenModalDenuncia] = useState(false)
+  const [openModalAvaliacao, setOpenModalAvaliacao] = useState(false)
 
   const [curriculo, setCurriculo] = useState<Curriculo>({
     id: '',
@@ -169,7 +173,7 @@ export function ListagemCurriculoCompleto() {
           <Box paddingX="0.3rem">
             <ListarIdiomas idiomas={curriculo.idiomas} />
           </Box>
-          <FooterButtons setOpenModal={setOpenModal} copiarEmail={copiarEmail}/>
+          <FooterButtons setOpenModal={setOpenModal} copiarEmail={copiarEmail} setOpenModalAvaliacao={setOpenModalAvaliacao} setOpenModalDenuncia={setOpenModalDenuncia}/>
         </Box>
         <Box
           display="flex"
@@ -196,9 +200,27 @@ export function ListagemCurriculoCompleto() {
         </Alert>
       </Snackbar>
 
-      <BasicModal children={
-        <UpdateStatusModal setOpenModal={setOpenModal} idVaga={idVaga} idCandidato={idCurriculo}/>
-      } open={openModal} handleClose={setOpenModal} title="Atualizar status da candidatura"/>
+    <BasicModal
+      children={<UpdateStatusModal setOpenModal={setOpenModal} idVaga={idVaga} idCandidato={idCurriculo} />}
+      open={openModal}
+      handleClose={setOpenModal}
+      title="Atualizar status da candidatura"
+    />
+
+    <BasicModal
+      children={<DenunciaModal setOpenModalDenuncia={setOpenModalDenuncia} idVaga={idVaga} idCandidato={idCurriculo} />}
+      open={openModalDenuncia}
+      handleClose={setOpenModalDenuncia}
+      title="Denunciar candidato"
+    />
+
+    <BasicModal
+      children={<AvaliacaoModal setOpenModalAvaliacao={setOpenModalAvaliacao} idVaga={idVaga} idCandidato={idCurriculo} />}
+      open={openModalAvaliacao}
+      handleClose={setOpenModalAvaliacao}
+      title="Avaliar currículo"
+    />
+
     </Box>
   );
 }

@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { observer } from "mobx-react-lite";
 import { saveDenuncia } from "../../../service/curriculo";
 import { useStore } from "../../../hooks/stores";
-
+import { Box, Snackbar, Alert } from "@mui/material";
 interface ListaProps {
   listagem: {
     id: string;
@@ -20,12 +20,13 @@ interface ListaProps {
     status?: string;
   }[];
   idCurriculo: string;
+  candidaturas?: boolean;
 }
 
 export const Lista = observer((props: ListaProps) => {
   const navigate = useNavigate();
   const { listagem, idCurriculo } = props;
-  const { loginStore } = useStore();
+  const { loginStore, snackbarStore } = useStore();
 
 
   // Estado para controlar a exibição do modal e a opção selecionada
@@ -34,57 +35,71 @@ export const Lista = observer((props: ListaProps) => {
   const [selectedVagaId, setSelectedVagaId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastVisible, setToastVisible] = useState<boolean>(false);
+
+  const [titulo, setTitulo] = useState<string>('');
+  const [conteudo, setConteudo] = useState<string>('');
+
   const handleDenunciaClick = (vagaId: string) => {
     setSelectedVagaId(vagaId); // Define a vaga selecionada
     setModalOpen(true); // Abre o modal
   };
 
   const handleCloseModal = () => {
-    setModalOpen(false); // Fecha o modal
-    setSelectedOption(null); // Reseta a seleção
-    setSelectedVagaId(null); // Reseta a vaga selecionada
+    setModalOpen(false);
+    setTitulo('');
+    setConteudo('');
+    setSelectedVagaId(null);
   };
 
 
-  const showToast = (message: string) => {
-    setToastMessage(message);
-    setToastVisible(true);
-    setTimeout(() => {
-      setToastVisible(false);
-    }, 3000);
-  };
+    const handleSubmitDenuncia = async () => {
+      if (selectedVagaId && titulo && conteudo) {  // Verifique se os dados estão completos
+        try {
+          const body = {
+            denunciante_id: Number(idCurriculo),
+            denunciante_tipo: 'Candidato',
+            denunciado_id: Number(selectedVagaId),
+            titulo,
+            conteudo
+          };
+          console.log('Requisição para salvar denúncia:', body);
 
-  const handleSubmitDenuncia = async () => {
-    if (selectedOption && selectedVagaId) {
-      try {
-        const tipoDenuncia = ["Conteúdo ofensivo", "Conteúdo sexual", "Informação falsa", "Discriminação ou ódio", "Outro motivo"].indexOf(selectedOption) + 1;
-        await saveDenuncia(
-          idCurriculo,
-          selectedVagaId,
-          Number(idCurriculo),
-          'Candidato',
-          Number(selectedVagaId),
-          tipoDenuncia,
-          loginStore.token
-        );
+          await saveDenuncia(
+            idCurriculo,
+            selectedVagaId,
+            Number(idCurriculo),
+            'Candidato',
+            Number(selectedVagaId),
+            titulo,
+            conteudo,
+            loginStore.token
+          );
 
-        showToast('Denúncia realizada com sucesso!');
-        setModalOpen(false);
-      } catch (error) {
-        showToast('Erro ao denunciar. Tente novamente.');
+         snackbarStore.setSeverity('success');
+         snackbarStore.setMessage('Denúncia realizada com sucesso');
+         snackbarStore.setOpenSnackbar(true);
+         setModalOpen(false);
+        } catch (error) {
+          snackbarStore.setSeverity('error');
+          snackbarStore.setMessage('Erro ao enviar denúncia. Tente novamente.');
+          snackbarStore.setOpenSnackbar(true);
+
+        }
+      } else {
+        snackbarStore.setSeverity('error');
+        snackbarStore.setMessage('Preencha todos os campos');
+        snackbarStore.setOpenSnackbar(true);
+
       }
-    } else {
-      alert("Por favor, selecione uma opção de denúncia.");
-    }
-  };
+    };
+
+
 
   return (
     <div>
       {listagem.map((e) => (
         <div key={e.id} className="container mx-auto max-w-lg bg-white rounded border mt-4">
-          {/* Renderização da vaga */}
           <div className="flex px-5 pt-5">
-            {/* Exibição do logo da empresa */}
             {e.Empresa.logo == null ? (
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-20 text-background1">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21" />
@@ -120,10 +135,9 @@ export const Lista = observer((props: ListaProps) => {
                     })
                   }
                 >
-                  Visualizar Vaga
+                {props.candidaturas ? "Visualizar" : "Candidatar-se"}
                 </button>
 
-                {/* Ícone de Denúncia */}
                 <button
                   className="text-red-600 hover:text-red-800"
                   onClick={() => handleDenunciaClick(e.id)} // Passa a vaga selecionada
@@ -141,48 +155,77 @@ export const Lista = observer((props: ListaProps) => {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
-            <h2 className="text-lg font-bold mb-4">Escolha o tipo de denúncia:</h2>
-            <form>
-              {["Conteúdo ofensivo", "Conteúdo sexual", "Informação falsa", "Discriminação ou ódio", "Outro motivo"].map((option) => (
-                <div key={option} className="mb-2">
-                  <label className="flex items-center">
-                    <input
-                      type="radio"
-                      name="denuncia"
-                      value={option}
-                      onChange={(e) => setSelectedOption(e.target.value)}
-                      className="mr-2"
-                    />
-                    {option}
-                  </label>
-                </div>
-              ))}
-            </form>
-            <div className="mt-4 flex justify-end">
-              <button
-                className="bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2"
-                onClick={handleCloseModal}
-              >
-                Cancelar
-              </button>
-              <button
-                className="bg-red-600 text-white px-4 py-2 rounded"
-                onClick={handleSubmitDenuncia}
-              >
-                Denunciar
-              </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" onClick={handleCloseModal}>
+          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg font-bold mb-4">Estamos aqui para ouví-lo. Denuncie!</h2>
+            <div className="mt-4">
+              <label className="text-gray-500 text-sm ml-2">Título da denúncia</label>
+              <textarea
+                value={titulo}
+                onChange={(e) => setTitulo(e.target.value)}
+                className="w-full p-2 border rounded mt-1"
+                rows={1}
+              />
             </div>
+
+            <div className="mt-4">
+              <label className="text-gray-500 text-sm ml-2">Conteúdo da denúncia</label>
+              <textarea
+                value={conteudo}
+                onChange={(e) => setConteudo(e.target.value)}
+                className="w-full p-2 border rounded mt-1"
+                rows={3}
+              />
+            </div>
+
+            <Box className="flex justify-between mt-4">
+                <Box className="flex items-center">
+                  <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      className="w-6 h-6 text-background1"
+                  >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+                    />
+                  </svg>
+                  <span className="text-gray-500 text-sm ml-2">
+                  Importante! <br /> Preencha todos os dados
+                </span>
+                </Box>
+                <Box>
+                  <button
+                      onClick={handleSubmitDenuncia}
+                      className="bg-background1 text-white py-2.5 px-6 rounded text-sm flex items-center"
+                    >
+                      Denunciar
+                    </button>
+                </Box>
+              </Box>
+
           </div>
         </div>
       )}
+      <Snackbar
+        open={snackbarStore.openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => snackbarStore.setOpenSnackbar(false)}
+      >
+        <Alert
+          onClose={() => snackbarStore.setOpenSnackbar(false)}
+          severity={snackbarStore.severity}
+          sx={{ width: '100%' }}
+        >
+          {snackbarStore.message}
+        </Alert>
+      </Snackbar>
 
-      {toastVisible && (
-          <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 p-3 bg-green-500 text-white rounded-md shadow-lg">
-            {toastMessage}
-          </div>
-        )}
+
     </div>
   );
 });

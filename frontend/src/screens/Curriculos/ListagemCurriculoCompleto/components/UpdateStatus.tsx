@@ -5,7 +5,7 @@ import { useStore } from "../../../../hooks/stores"
 import { BaseButton } from "./BaseButton"
 
 type Props = {
-    idCandidato?: string, 
+    idCandidato?: string,
     idVaga?: string,
     setOpenModal: (openModal: boolean) => void
 }
@@ -35,17 +35,17 @@ export const UpdateStatusModal = ({ idVaga, idCandidato, setOpenModal}: Props) =
          </Select>
 
          <Box display="flex" flexDirection="row" justifyContent="space-between">
-        
+
       <BaseButton
         backgroundColor="#FFF"
         extraStyle={ {border: 1, borderColor: '#4766AC',   color: '#4766AC',}}
          children={
-           <Box onClick={() => 
+           <Box onClick={() =>
             setOpenModal(false)
           }
             component="span">
                 <Typography>Cancelar</Typography>
-             
+
           </Box>
          }
       />
@@ -81,8 +81,8 @@ export const UpdateStatusModal = ({ idVaga, idCandidato, setOpenModal}: Props) =
 
          </Box>
 
-        
-       
+
+
          </FormControl>
     )
 }

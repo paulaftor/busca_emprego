@@ -21,9 +21,13 @@ module.exports = {
         allowNull: false,
         type: Sequelize.INTEGER,
       },
-      tipo_denuncia: {
+      titulo: {
         allowNull: false,
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING(100),
+      },
+      conteudo: {
+        allowNull: false,
+        type: Sequelize.TEXT,
       },
       createdAt: {
         allowNull: false,

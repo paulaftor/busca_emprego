@@ -20,8 +20,12 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
         allowNull: false,
       },
-      tipo_denuncia: {
-        type: DataTypes.INTEGER,
+      titulo: {
+        type: DataTypes.STRING(100),
+        allowNull: false,
+      },
+      conteudo: {
+        type: DataTypes.TEXT,
         allowNull: false,
       },
     },

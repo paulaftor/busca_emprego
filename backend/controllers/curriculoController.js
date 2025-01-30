@@ -220,12 +220,7 @@ avaliar: async (req, res) => {
 },
 
 denunciar: async (req, res) => {
-  const { denunciante_id, denunciante_tipo, denunciado_id, tipo_denuncia } = req.body;
-
-  if (![1, 2, 3, 4, 5].includes(tipo_denuncia)) {
-    return res.status(400).json({ message: 'Tipo de denúncia deve ser entre 1 e 5.' });
-  }
-
+  const { denunciante_id, denunciante_tipo, denunciado_id, titulo, conteudo } = req.body;
   const denuncias = models.Denuncia;
 
   try {
@@ -233,7 +228,8 @@ denunciar: async (req, res) => {
       denunciante_id,
       denunciante_tipo,
       denunciado_id,
-      tipo_denuncia
+      titulo,
+      conteudo
     });
 
     return res.json({

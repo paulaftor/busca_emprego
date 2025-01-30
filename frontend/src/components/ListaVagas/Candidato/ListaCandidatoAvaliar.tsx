@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useStore } from '../../../hooks/stores';
 import { saveAvaliacao } from '../../../service/curriculo';
 import { useParams } from 'react-router-dom';
-
+import { Box, Snackbar, Alert } from '@mui/material';
 interface Vaga {
   id: string;
   titulo: string;
@@ -27,7 +27,7 @@ interface ListaProps {
 export const ListaAvaliacoes = observer((props: ListaProps) => {
 
   const { listagem, idCurriculo } = props;
-  const { loginStore } = useStore();
+  const { loginStore, snackbarStore } = useStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedVaga, setSelectedVaga] = useState<Vaga | null>(null);
@@ -49,36 +49,34 @@ export const ListaAvaliacoes = observer((props: ListaProps) => {
     setContras('');
   };
 
-  const showToast = (message: string) => {
-    setToastMessage(message);
-    setToastVisible(true);
-    setTimeout(() => {
-      setToastVisible(false);
-    }, 3000);
-  };
-
   const saveEvaluation = async () => {
-    if (!selectedVaga) return;
+    if (selectedVaga && nota > 0 && pros && contras) {
+        try {
+          const result = await saveAvaliacao(
+            idCurriculo,
+            selectedVaga.id,
+            Number(idCurriculo),
+            'Candidato',
+            Number(selectedVaga.id),
+            nota,
+            pros,
+            contras,
+            loginStore.token
+          );
 
-    try {
-      const result = await saveAvaliacao(
-        idCurriculo,
-        selectedVaga.id,
-        Number(idCurriculo),
-        'Candidato',
-        Number(selectedVaga.id),
-        nota,
-        pros,
-        contras,
-        loginStore.token
-      );
-
-      console.log('Avaliação salva com sucesso:', result);
-      showToast('Avaliação salva com sucesso!');
-      closeModal();
-    } catch (error) {
-      console.error('Erro ao salvar avaliação:', error);
-      showToast('Erro ao salvar avaliação. Tente novamente.');
+          snackbarStore.setSeverity('success');
+          snackbarStore.setMessage('Avaliação enviada com sucesso');
+          snackbarStore.setOpenSnackbar(true);
+          closeModal();
+        } catch (error) {
+          snackbarStore.setSeverity('error');
+          snackbarStore.setMessage('Erro ao enviar avaliação. Tente novamente.');
+          snackbarStore.setOpenSnackbar(true);
+        }
+    } else {
+        snackbarStore.setSeverity('error');
+        snackbarStore.setMessage('Preencha todos os campos');
+        snackbarStore.setOpenSnackbar(true);
     }
   };
 
@@ -155,12 +153,12 @@ export const ListaAvaliacoes = observer((props: ListaProps) => {
       ))}
 
       {isModalOpen && selectedVaga && (
-        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded-lg max-w-sm w-full">
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50" onClick={closeModal}>
+          <div className="bg-white p-6 rounded-lg max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
             <h3 className="font-bold text-lg">Avaliar vaga: {selectedVaga.titulo}</h3>
 
             <div className="mt-4 flex justify-between">
-              <label className="text-sm font-semibold">Nota</label>
+              <label className="text-gray-500 text-sm ml-2">Nota</label>
               <div className="flex">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
@@ -175,7 +173,7 @@ export const ListaAvaliacoes = observer((props: ListaProps) => {
             </div>
 
             <div className="mt-4">
-              <label className="text-sm font-semibold">Pros</label>
+              <label className="text-gray-500 text-sm ml-2">Prós</label>
               <textarea
                 value={pros}
                 onChange={(e) => setPros(e.target.value)}
@@ -185,7 +183,7 @@ export const ListaAvaliacoes = observer((props: ListaProps) => {
             </div>
 
             <div className="mt-4">
-              <label className="text-sm font-semibold">Contras</label>
+              <label className="text-gray-500 text-sm ml-2">Contras</label>
               <textarea
                 value={contras}
                 onChange={(e) => setContras(e.target.value)}
@@ -194,29 +192,54 @@ export const ListaAvaliacoes = observer((props: ListaProps) => {
               />
             </div>
 
-            <div className="mt-4 flex justify-between">
-              <button
-                onClick={closeModal}
-                className="bg-gray-300 text-black py-2 px-4 rounded"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={saveEvaluation}
-                className="bg-background1 text-white py-2.5 px-6 rounded text-sm flex items-center"
-              >
-                Salvar Avaliação
-              </button>
-            </div>
+            <Box className="flex justify-between mt-4">
+                <Box className="flex items-center">
+                  <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      className="w-6 h-6 text-background1"
+                  >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
+                    />
+                  </svg>
+                  <span className="text-gray-500 text-sm ml-2">
+                  Importante! <br /> Preencha todos os dados
+                </span>
+                </Box>
+                <Box>
+                  <button
+                      onClick={saveEvaluation}
+                      className="bg-background1 text-white py-2.5 px-6 rounded text-sm flex items-center"
+                    >
+                      Salvar Avaliação
+                    </button>
+                </Box>
+              </Box>
           </div>
         </div>
       )}
 
-      {toastVisible && (
-        <div className="fixed bottom-5 left-1/2 transform -translate-x-1/2 p-3 bg-green-500 text-white rounded-md shadow-lg">
-          {toastMessage}
-        </div>
-      )}
+      <Snackbar
+          open={snackbarStore.openSnackbar}
+          autoHideDuration={6000}
+          onClose={() => snackbarStore.setOpenSnackbar(false)}
+        >
+          <Alert
+            onClose={() => snackbarStore.setOpenSnackbar(false)}
+            severity={snackbarStore.severity}
+            sx={{ width: '100%' }}
+          >
+            {snackbarStore.message}
+          </Alert>
+        </Snackbar>
+
+
     </div>
   );
 });
